@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cadilib"
+version = "0.1.0"
+description = "CADI MDx binary file library"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "joblib",
+    "numpy",
+    "pandas",
+    "polars",
+    "scipy",
+    "scikit-image",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pyarrow",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cadilib"]
+artifacts = [
+    "src/cadilib/ionogramparser/*.pyd",
+    "src/cadilib/ionogramparser/*.so",
+]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+
+[tool.uv]
+managed = true
