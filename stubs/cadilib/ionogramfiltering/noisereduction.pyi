@@ -1,0 +1,8 @@
+import _cython_3_3_0
+
+__test__: dict
+autoscale: _cython_3_3_0.cython_function_or_method
+bin_edges: _cython_3_3_0.cython_function_or_method
+calculate_pixbins: _cython_3_3_0.cython_function_or_method
+freq_filter: _cython_3_3_0.cython_function_or_method
+o_x_separation: _cython_3_3_0.cython_function_or_method

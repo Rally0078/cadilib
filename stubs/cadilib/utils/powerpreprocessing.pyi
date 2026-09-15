@@ -1,0 +1,4 @@
+import _cython_3_3_0
+
+__test__: dict
+convert_amplitude_to_power: _cython_3_3_0.cython_function_or_method

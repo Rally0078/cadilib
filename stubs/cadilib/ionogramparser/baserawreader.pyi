@@ -1,8 +1,11 @@
-from abc import ABC, abstractmethod
-from pathlib import Path
-from cadilib.ionogramparser.baseoutput import BaseOutput
+import _abc
+import abc
+from cadilib.ionogramparser.baseoutput import BaseOutput as BaseOutput
+from typing import ClassVar
 
-class DataReader(ABC):
+__test__: dict
+
+class DataReader(abc.ABC):
     """
     Base raw reader for all ionogram file types. 
 
@@ -14,7 +17,7 @@ class DataReader(ABC):
     ---------
     read_raw_data : Reads ionogram data from a file.
     """
+    _abc_impl: ClassVar[_abc._abc_data] = ...
+    __abstractmethods__: ClassVar[frozenset] = ...
     @staticmethod
-    def read_raw_data(filename: Path) -> BaseOutput:
-        raise NotImplementedError
-
+    def read_raw_data(*args, **kwargs): ...
