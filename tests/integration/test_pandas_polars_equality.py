@@ -105,31 +105,52 @@ class TestPandasPolarsEquality:
                 df_pandas_freqbins, df_polars_freqbins, len(mock_data.freqbins.frequency)
             )
 
-    def test_dataframe_equality_real_files(self, test_real_md3, test_real_md4, test_raw_reader):
+    def test_dataframe_equality_real_files(self, test_real_md3, test_real_md4, test_py_rs_readers):
         """
         Test that pandas and polars dataframes created from real CADI files are equivalent.
         """
-        for raw_file in [test_real_md3, test_real_md4]:
-            cadi_data = test_raw_reader.read_raw_data(raw_file)
-            df_pandas_dopbins, df_pandas_freqbins = PandasUtils.create_pandas_from_arrays(
-                cadi_data, radar_type='cadi'
-            )
-            df_polars_dopbins, df_polars_freqbins = PolarsUtils.create_polars_from_arrays(
-                cadi_data, radar_type='cadi'
-            )
-            self._assert_dataframes_equal(
-                df_pandas_dopbins, df_polars_dopbins, len(cadi_data.dopbins.frequency)
-            )
-            self._assert_dataframes_equal(
-                df_pandas_freqbins, df_polars_freqbins, len(cadi_data.freqbins.frequency)
-            )
+        for test_raw_reader in test_py_rs_readers:
+            for raw_file in [test_real_md3, test_real_md4]:
+                cadi_data = test_raw_reader.read_raw_data(raw_file)
+                df_pandas_dopbins, df_pandas_freqbins = PandasUtils.create_pandas_from_arrays(
+                    cadi_data, radar_type='cadi'
+                )
+                df_polars_dopbins, df_polars_freqbins = PolarsUtils.create_polars_from_arrays(
+                    cadi_data, radar_type='cadi'
+                )
+                self._assert_dataframes_equal(
+                    df_pandas_dopbins, df_polars_dopbins, len(cadi_data.dopbins.frequency)
+                )
+                self._assert_dataframes_equal(
+                    df_pandas_freqbins, df_polars_freqbins, len(cadi_data.freqbins.frequency)
+                )
 
-    def test_dataframe_equality_othersites(self, test_raw_othersites, test_raw_reader):
+    def test_dataframe_equality_othersites(self, test_raw_othersites, test_py_rs_readers):
         """
         Test that pandas and polars dataframes created from other sites files are equivalent.
         """
-        for raw_file in test_raw_othersites:
-            cadi_data = test_raw_reader.read_raw_data(raw_file)
+        for test_raw_reader in test_py_rs_readers:
+            for raw_file in test_raw_othersites:
+                cadi_data = test_raw_reader.read_raw_data(raw_file)
+                df_pandas_dopbins, df_pandas_freqbins = PandasUtils.create_pandas_from_arrays(
+                    cadi_data, radar_type='cadi'
+                )
+                df_polars_dopbins, df_polars_freqbins = PolarsUtils.create_polars_from_arrays(
+                    cadi_data, radar_type='cadi'
+                )
+                self._assert_dataframes_equal(
+                    df_pandas_dopbins, df_polars_dopbins, len(cadi_data.dopbins.frequency)
+                )
+                self._assert_dataframes_equal(
+                    df_pandas_freqbins, df_polars_freqbins, len(cadi_data.freqbins.frequency)
+                )
+
+    def test_dataframe_equality_badfile(self, test_raw_badfile, test_py_rs_readers):
+        """
+        Test that pandas and polars dataframes created from bad/incomplete CADI files are equivalent.
+        """
+        for test_raw_reader in test_py_rs_readers:
+            cadi_data = test_raw_reader.read_raw_data(test_raw_badfile)
             df_pandas_dopbins, df_pandas_freqbins = PandasUtils.create_pandas_from_arrays(
                 cadi_data, radar_type='cadi'
             )
@@ -142,21 +163,3 @@ class TestPandasPolarsEquality:
             self._assert_dataframes_equal(
                 df_pandas_freqbins, df_polars_freqbins, len(cadi_data.freqbins.frequency)
             )
-
-    def test_dataframe_equality_badfile(self, test_raw_badfile, test_raw_reader):
-        """
-        Test that pandas and polars dataframes created from bad/incomplete CADI files are equivalent.
-        """
-        cadi_data = test_raw_reader.read_raw_data(test_raw_badfile)
-        df_pandas_dopbins, df_pandas_freqbins = PandasUtils.create_pandas_from_arrays(
-            cadi_data, radar_type='cadi'
-        )
-        df_polars_dopbins, df_polars_freqbins = PolarsUtils.create_polars_from_arrays(
-            cadi_data, radar_type='cadi'
-        )
-        self._assert_dataframes_equal(
-            df_pandas_dopbins, df_polars_dopbins, len(cadi_data.dopbins.frequency)
-        )
-        self._assert_dataframes_equal(
-            df_pandas_freqbins, df_polars_freqbins, len(cadi_data.freqbins.frequency)
-        )

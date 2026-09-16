@@ -1,7 +1,12 @@
-__test__: dict
-
-class BadIndicesInData(ValueError):
-    def __init__(self, *args, **kwargs) -> None: ...
+from _typeshed import Incomplete
 
 class FolderNotContainingData(Exception):
-    def __init__(self, *args, **kwargs) -> None: ...
+    input_dir: Incomplete
+    message: Incomplete
+    def __init__(self, input_dir, message: str = 'Folder does not contain the required data files') -> None: ...
+
+class BadIndicesInData(ValueError):
+    timepartitions: Incomplete
+    len_data: Incomplete
+    filename: Incomplete
+    def __init__(self, metadata, iq, filename) -> None: ...

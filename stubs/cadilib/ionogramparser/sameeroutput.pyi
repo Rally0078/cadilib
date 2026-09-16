@@ -1,29 +1,38 @@
-import _abc
-import cadilib.ionogramparser.baseoutput
-import dataclasses
+import numpy as np
+import numpy.typing as npt
 from cadilib.ionogramparser.baseoutput import BaseOutput as BaseOutput
-from typing import Callable, ClassVar
+from dataclasses import dataclass
+from datetime import datetime
 
-__test__: dict
+@dataclass
+class SameerData(BaseOutput):
+    file: list[str]
+    metadata: SameerHeader
+    height: npt.NDArray[np.float32]
+    frequency: npt.NDArray[np.float32]
+    freq_list: npt.NDArray[np.float32]
+    dop_shifts: npt.NDArray[np.float32]
+    signals: npt.NDArray[np.float32]
+    @classmethod
+    def from_raw_reader(self, file: list[str], metadata: dict, height: npt.NDArray[np.float32], frequency: npt.NDArray[np.float32], freq_list: npt.NDArray[np.float32], dop_shifts: npt.NDArray[np.float32], signals: npt.NDArray[np.float32]) -> SameerData: ...
 
-class SameerData(cadilib.ionogramparser.baseoutput.BaseOutput):
-    """SameerData(file: 'List[str]', metadata: 'SameerHeader', height: 'npt.NDArray[np.float32]', frequency: 'npt.NDArray[np.float32]', freq_list: 'npt.NDArray[np.float32]', dop_shifts: 'npt.NDArray[np.float32]', signals: 'npt.NDArray[np.float32]')"""
-    __init__: ClassVar[Callable] = ...
-    _abc_impl: ClassVar[_abc._abc_data] = ...
-    from_raw_reader: ClassVar[method] = ...
-    __abstractmethods__: ClassVar[frozenset] = ...
-    __dataclass_fields__: ClassVar[dict] = ...
-    __dataclass_params__: ClassVar[dataclasses._DataclassParams] = ...
-    __eq__: ClassVar[Callable] = ...
-    __match_args__: ClassVar[tuple] = ...
-    __replace__: ClassVar[Callable] = ...
-
+@dataclass
 class SameerHeader:
-    """SameerHeader(site: 'str', lat: 'float', long: 'float', filetype: 'str', extension: 'str', datetime: 'datetime', timepartitions: 'Dict[str, int]', nfreqs: 'int', start_freq: 'float', end_freq: 'float', freq_step: 'float', ipp: 'float', nrgb: 'int', nfft: 'int', nci: 'int', cbl: 'int')"""
-    __init__: ClassVar[Callable] = ...
-    from_raw_header: ClassVar[method] = ...
-    __dataclass_fields__: ClassVar[dict] = ...
-    __dataclass_params__: ClassVar[dataclasses._DataclassParams] = ...
-    __eq__: ClassVar[Callable] = ...
-    __match_args__: ClassVar[tuple] = ...
-    __replace__: ClassVar[Callable] = ...
+    site: str
+    lat: float
+    long: float
+    filetype: str
+    extension: str
+    datetime: datetime
+    timepartitions: dict[str, int]
+    nfreqs: int
+    start_freq: float
+    end_freq: float
+    freq_step: float
+    ipp: float
+    nrgb: int
+    nfft: int
+    nci: int
+    cbl: int
+    @classmethod
+    def from_raw_header(self, header: dict) -> SameerHeader: ...

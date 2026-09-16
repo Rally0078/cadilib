@@ -1,4 +1,4 @@
-import _cython_3_3_0
+import numpy as np
+from typing import Annotated, Literal
 
-__test__: dict
-convert_amplitude_to_power: _cython_3_3_0.cython_function_or_method
+def convert_amplitude_to_power(signal: Annotated[np.typing.NDArray[np.int8], Literal['M', 'N']]): ...

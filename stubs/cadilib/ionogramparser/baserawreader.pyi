@@ -1,11 +1,8 @@
-import _abc
-import abc
+from abc import ABC
 from cadilib.ionogramparser.baseoutput import BaseOutput as BaseOutput
-from typing import ClassVar
+from pathlib import Path
 
-__test__: dict
-
-class DataReader(abc.ABC):
+class DataReader(ABC):
     """
     Base raw reader for all ionogram file types. 
 
@@ -17,7 +14,5 @@ class DataReader(abc.ABC):
     ---------
     read_raw_data : Reads ionogram data from a file.
     """
-    _abc_impl: ClassVar[_abc._abc_data] = ...
-    __abstractmethods__: ClassVar[frozenset] = ...
     @staticmethod
-    def read_raw_data(*args, **kwargs): ...
+    def read_raw_data(filename: Path) -> BaseOutput: ...

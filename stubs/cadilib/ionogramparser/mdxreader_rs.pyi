@@ -1,10 +1,11 @@
-import _abc
-import cadilib.ionogramparser.baseoutput
-import dataclasses
+from pathlib import Path
+import numpy as np
+import numpy.typing as npt
 from cadilib.ionogramparser.baseoutput import BaseOutput as BaseOutput
-from typing import Callable, ClassVar
+from dataclasses import dataclass
+from datetime import datetime
 
-def read_raw_data(*args, **kwargs):
+def read_raw_data(filename: Path) -> CADIdata:
     """
     Read CADI ionogram data from mdx binary formats(x=1,2,3,4).
 
@@ -44,7 +45,8 @@ def read_raw_data(*args, **kwargs):
     >>> frebins_noise_power10 = output.freqbins.frebins_noise_power10
     """
 
-class CADIdata(cadilib.ionogramparser.baseoutput.BaseOutput):
+@dataclass
+class CADIdata(BaseOutput):
     """
     Contains the CADI output data from a given `mdX(X=1,2,3,4)` file.
 
@@ -63,15 +65,44 @@ class CADIdata(cadilib.ionogramparser.baseoutput.BaseOutput):
     dopbins: `CADIdopbin`
         An object containing the CADI doppler bin data.
     """
-    __init__: ClassVar[Callable] = ...
-    _abc_impl: ClassVar[_abc._abc_data] = ...
-    __abstractmethods__: ClassVar[frozenset] = ...
-    __dataclass_fields__: ClassVar[dict] = ...
-    __dataclass_params__: ClassVar[dataclasses._DataclassParams] = ...
-    __eq__: ClassVar[Callable] = ...
-    __match_args__: ClassVar[tuple] = ...
-    __replace__: ClassVar[Callable] = ...
+    file: list[str]
+    metadata: CADIheader
+    freq_list: npt.NDArray[np.float32]
+    freqbins: CADIfreqbin
+    dopbins: CADIdopbin
 
+@dataclass
+class CADIheader:
+    """
+    Contains the CADI header data from a given `mdX(X=1,2,3,4)` file.
+    """
+    site: str
+    datetime: datetime
+    source: str
+    filetype: str
+    nfreqs: int
+    nheights: int
+    minheight: int
+    maxheight: int
+    dheight: float
+    pps: float
+    ndops: int
+    npulses_avgd: float
+    dtime: int
+    base_thr100: int
+    noise_thr100: int
+    min_dop_forsave: int
+    gain_control: str
+    sig_process: str
+    extension: str
+    spares: str
+    noofreceivers: int
+    incompletedata: bool
+    incompleteheader: bool
+    @classmethod
+    def from_raw_header(self, metadata: dict) -> CADIheader: ...
+
+@dataclass
 class CADIdopbin:
     """
     Contains the CADI doppler bin data from a given `mdX(X=1,2,3,4)` file. 
@@ -91,13 +122,13 @@ class CADIdopbin:
     complex_signal : `numpy.ndarray`
         Contains the complex signal value from each receiver.
     """
-    __init__: ClassVar[Callable] = ...
-    __dataclass_fields__: ClassVar[dict] = ...
-    __dataclass_params__: ClassVar[dataclasses._DataclassParams] = ...
-    __eq__: ClassVar[Callable] = ...
-    __match_args__: ClassVar[tuple] = ...
-    __replace__: ClassVar[Callable] = ...
+    timepartitions: dict[str, int]
+    height: npt.NDArray[np.float32]
+    frequency: npt.NDArray[np.float32]
+    dop_shifts: npt.NDArray[np.float32]
+    signals: npt.NDArray[np.int16]
 
+@dataclass
 class CADIfreqbin:
     """
     Contains the CADI frequency bin data from a given `mdX(X=1,2,3,4)` file. 
@@ -117,22 +148,8 @@ class CADIfreqbin:
     frebins_noise_power10 : `numpy.ndarray`
         Contains the scaled noise power10 values of all the observations.
     """
-    __init__: ClassVar[Callable] = ...
-    __dataclass_fields__: ClassVar[dict] = ...
-    __dataclass_params__: ClassVar[dataclasses._DataclassParams] = ...
-    __eq__: ClassVar[Callable] = ...
-    __match_args__: ClassVar[tuple] = ...
-    __replace__: ClassVar[Callable] = ...
-
-class CADIheader:
-    """
-    Contains the CADI header data from a given `mdX(X=1,2,3,4)` file.
-    """
-    __init__: ClassVar[Callable] = ...
-    from_raw_header: ClassVar[method] = ...
-    __dataclass_fields__: ClassVar[dict] = ...
-    __dataclass_params__: ClassVar[dataclasses._DataclassParams] = ...
-    __eq__: ClassVar[Callable] = ...
-    __match_args__: ClassVar[tuple] = ...
-    __replace__: ClassVar[Callable] = ...
-
+    timepartitions: dict[str, int]
+    frequency: npt.NDArray[np.float32]
+    frebins_gain_flag: npt.NDArray[np.uint8]
+    frebins_noise_flag: npt.NDArray[np.uint8]
+    frebins_noise_power10: npt.NDArray[np.uint16]

@@ -1,13 +1,12 @@
+import polars as pl
 from cadilib.ionogramparser.cadioutput import CADIdata as CADIdata
 from cadilib.ionogramparser.sameeroutput import SameerData as SameerData
 from cadilib.utils.siteinfo import SiteInfo as SiteInfo
 
-__test__: dict
-
 class PolarsUtils:
-    def __init__(self, *args, **kwargs) -> None: ...
+    def __init__(self) -> None: ...
     @staticmethod
-    def create_polars_from_arrays(*args, **kwargs):
+    def create_polars_from_arrays(data: CADIdata | SameerData, radar_type: str = 'cadi') -> pl.DataFrame | tuple[pl.DataFrame, pl.DataFrame]:
         """
             Creates a polars dataframe from the given input.
 

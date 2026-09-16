@@ -1,13 +1,12 @@
+import pandas as pd
 from cadilib.ionogramparser.cadioutput import CADIdata as CADIdata
 from cadilib.ionogramparser.sameeroutput import SameerData as SameerData
 from cadilib.utils.siteinfo import SiteInfo as SiteInfo
 
-__test__: dict
-
 class PandasUtils:
-    def __init__(self, *args, **kwargs) -> None: ...
+    def __init__(self) -> None: ...
     @staticmethod
-    def create_pandas_from_arrays(*args, **kwargs):
+    def create_pandas_from_arrays(data: CADIdata | SameerData, radar_type: str = 'cadi') -> pd.DataFrame | tuple[pd.DataFrame, pd.DataFrame]:
         """
             Creates a pandas dataframe from the given input.
 
