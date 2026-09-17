@@ -115,6 +115,6 @@ uv run pytest
 Automated publishing to PyPI is configured via GitHub Actions (`.github/workflows/publish.yml`):
 - **Trigger**: Pushes to the `release` branch.
 - **Workflow**:
-  1. Matrix builds binary wheels across platforms (`ubuntu-latest`, `windows-latest`, `macos-latest`) across Python 3.12, 3.13, and 3.14 using `uv build --wheel`.
+  1. Matrix builds binary wheels across platforms (`ubuntu-latest`, `windows-latest`, macos currently unavailable) across Python 3.12, 3.13, and 3.14 using `uv build --wheel`.
   2. Closed-source distribution: only binary wheels (`.whl`) are published (source distributions `sdist` are not generated or released).
   3. Publishes wheels to PyPI via Trusted Publishing (OIDC).
