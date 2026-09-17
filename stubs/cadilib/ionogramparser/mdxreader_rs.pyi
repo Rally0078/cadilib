@@ -1,9 +1,49 @@
-from cadilib.ionogramparser.baseoutput import BaseOutput
-from dataclasses import dataclass
-from typing import List, Dict
-from datetime import datetime
+from pathlib import Path
 import numpy as np
 import numpy.typing as npt
+from cadilib.ionogramparser.baseoutput import BaseOutput as BaseOutput
+from dataclasses import dataclass
+from datetime import datetime
+
+def read_raw_data(filename: Path) -> CADIdata:
+    """
+    Read CADI ionogram data from mdx binary formats(x=1,2,3,4).
+
+    Parameters
+    ----------
+    filename : `Path`
+        Location of the mdx file to parse.
+
+    Returns
+    ----------
+    Returns multiple values in a `CADIdata` object as follows, where the arrays can be partitioned by the timepartitions provided in the corresponding data bins.
+
+    file_list : `List[str]`
+        List containing the name of the file.
+
+    metadata : `CADIheader`
+        An object containing metadata of the observations. Contains header info stored in the mdx file.
+
+    freqbins : `CADIfreqbin`
+        An object containing the CADI frequency bin data.
+
+    dopbins: `CADIdopbin`
+        An object containing the CADI doppler bin data.
+
+    Examples
+    --------
+    Read one md4 file from current directory
+
+    >>> output = MDreader.read_raw_data(Path('./input.md4'))
+    >>> files_list = output.file_list
+    >>> metadata = output.metadata
+    >>> heights = output.dopbins.height
+    >>> frequencies = output.dopbins.frequency
+    >>> freq_list = output.dopbins.freq_list
+    >>> dop_shifts = output.dopbins.dop_shifts
+    >>> complex_signal = output.dopbins.complex_signal
+    >>> frebins_noise_power10 = output.freqbins.frebins_noise_power10
+    """
 
 @dataclass
 class CADIdata(BaseOutput):
@@ -25,7 +65,7 @@ class CADIdata(BaseOutput):
     dopbins: `CADIdopbin`
         An object containing the CADI doppler bin data.
     """
-    file: List[str]
+    file: list[str]
     metadata: CADIheader
     freq_list: npt.NDArray[np.float32]
     freqbins: CADIfreqbin
@@ -59,12 +99,8 @@ class CADIheader:
     noofreceivers: int
     incompletedata: bool
     incompleteheader: bool
-
     @classmethod
-    def from_raw_header(self, metadata: Dict) -> CADIheader:
-        return CADIheader(
-            **metadata
-        )
+    def from_raw_header(self, metadata: dict) -> CADIheader: ...
 
 @dataclass
 class CADIdopbin:
@@ -86,8 +122,7 @@ class CADIdopbin:
     complex_signal : `numpy.ndarray`
         Contains the complex signal value from each receiver.
     """
-
-    timepartitions: Dict[str, int]
+    timepartitions: dict[str, int]
     height: npt.NDArray[np.float32]
     frequency: npt.NDArray[np.float32]
     dop_shifts: npt.NDArray[np.float32]
@@ -113,8 +148,7 @@ class CADIfreqbin:
     frebins_noise_power10 : `numpy.ndarray`
         Contains the scaled noise power10 values of all the observations.
     """
-
-    timepartitions: Dict[str, int]
+    timepartitions: dict[str, int]
     frequency: npt.NDArray[np.float32]
     frebins_gain_flag: npt.NDArray[np.uint8]
     frebins_noise_flag: npt.NDArray[np.uint8]

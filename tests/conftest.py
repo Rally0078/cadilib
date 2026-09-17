@@ -27,8 +27,8 @@ def pytest_configure(config):
 
 def pytest_collection_modifyitems(items):
     """Modifies test items in place to ensure test classes run in a given order."""
-    CLASS_ORDER = ["TestCADIRaw","TestSiteInfo","TestPandasUtils", "TestCADIPyRawIntegration", "TestPandasPolarsEquality", 
-    "TestCADIRustRaw", "TestCADIRustRawIntegration", "TestCADIRustPyEquality"]
+    CLASS_ORDER = ["TestCADIRaw","TestSiteInfo", "TestCADIRustRaw", "TestPandasUtils", "TestCADIPyRawIntegration", 
+    "TestCADIRustRawIntegration", "TestCADIRustPyEquality", "TestPandasPolarsEquality"]
     if not require_rust:
         skip_rust = pytest.mark.skip(reason="require_rust is False")
         for item in items:

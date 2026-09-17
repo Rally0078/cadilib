@@ -1,13 +1,3 @@
-"""
-    SAMEER iono ASCII format ionogram parser.
-
-    Classes
-    ---------
-    SameerReader
-        Static Methods
-        ---------
-        read_raw_data: Reads ionogram data from iono file.
-"""
 from pathlib import Path
 from datetime import datetime
 from cadilib.ionogramparser.baserawreader import DataReader
@@ -15,10 +5,13 @@ from cadilib.ionogramparser.sameeroutput import SameerData
 import numpy as np
 from cadilib.utils.siteinfo import SiteInfo
 
-type time_partition_dict = dict[str, int]
+time_partition_dict = dict[str, int]
 
 #Sameer .iono ASCII format reader, extended from DataReader baseclass
 class SameerReader(DataReader):
+    """
+    SAMEER iono ASCII format ionogram parser. Contains the static method `read_raw_data` to read ionogram data from iono file.
+    """
     @staticmethod
     def read_raw_data(filename: Path) -> SameerData:
         """Read SAMEER ionogram ASCII data from .iono ASCII format.

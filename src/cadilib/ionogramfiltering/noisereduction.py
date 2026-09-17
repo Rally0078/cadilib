@@ -109,7 +109,7 @@ def o_x_separation(freq_selection, height_selection, dop_selection, sensors_sele
     sensor4_phase = np.angle(sensors_selection[:, 6] * polarity[3] + 1j * sensors_selection[:, 7] * polarity[3])
     sensor1_phase = sensor1_phase + PH2_corr
     sensor3_phase = sensor3_phase + PH4_corr
-    if phchoice == '12':
+    if phchoice == '14':
         phdiff = sensor1_phase - sensor4_phase
         phdiff[phdiff < np.pi] += 2*np.pi
         phdiff[phdiff > np.pi] -= 2*np.pi

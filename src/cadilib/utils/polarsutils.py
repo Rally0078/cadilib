@@ -1,5 +1,6 @@
 from typing import Tuple
 from cadilib.ionogramparser.cadioutput import CADIdata
+from cadilib.ionogramparser.mdxreader_rs import CADIdata as CADIdata_rs
 from cadilib.ionogramparser.sameeroutput import SameerData
 import numpy as np
 import polars as pl
@@ -45,7 +46,7 @@ class PolarsUtils:
     def _get_single_dataframe(data: CADIdata | SameerData, radar_type='cadi') -> pl.DataFrame | Tuple[pl.DataFrame, pl.DataFrame]:
         column_names = ['freq (Hz)', 'height (km)', 'dopplershift']
 
-        if radar_type.lower() == 'cadi' and isinstance(data, CADIdata):
+        if radar_type.lower() == 'cadi' and isinstance(data, (CADIdata, CADIdata_rs)):
             freqs = data.dopbins.frequency
             heights = data.dopbins.height
             dop_shifts = data.dopbins.dop_shifts
@@ -72,7 +73,7 @@ class PolarsUtils:
         data_dict["datetime"] = PolarsUtils._get_timestamps(data.metadata, timepartitions)
         df_signals = pl.DataFrame(data_dict)
 
-        if radar_type.lower() == 'cadi' and isinstance(data, CADIdata):
+        if radar_type.lower() == 'cadi' and isinstance(data, (CADIdata, CADIdata_rs)):
             column_names = ['freq (Hz)', 'gain_flag', 'noise_flag', 'noise_power10']
             table_data = [data.freqbins.frequency, data.freqbins.frebins_gain_flag, 
                         data.freqbins.frebins_noise_flag, data.freqbins.frebins_noise_power10]
