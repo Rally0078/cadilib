@@ -35,6 +35,9 @@ jobs:
       - name: Install Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      - name: Run cargo tests
+        run: cargo test --manifest-path "./rust/Cargo.toml"
+
       - name: Build wheel with uv
         run: uv build --wheel --python ${{ matrix.python-version }}
 
