@@ -6,6 +6,7 @@ import json
 import sys
 import platform
 from pathlib import Path
+from platformdirs import user_data_path, user_config_path
 from functools import lru_cache
 
 DEFAULT_SITES = {
@@ -57,14 +58,15 @@ DEFAULT_SITES = {
 }
 
 def get_sites_json_path() -> Path:
-    os_name = platform.system()
-    if os_name == "Windows":
-        if getattr(sys, 'frozen', False):
-            return Path(sys.executable).parent / "sites.json"
-        else:
-            return Path("./sites.json")
+    if platform.system() == "Windows":
+        # C:\Users\<User>\AppData\Local\cadilib\sites.json
+        config_dir = user_data_path(appname='cadilib', appauthor=False)
     else:
-        return Path.home() / ".config" / "egrliono" / "sites.json"
+        # ~/.config/cadilib/sites.json (Linux / macOS)
+        config_dir = user_config_path(appname='cadilib', appauthor=False)
+
+    config_dir.mkdir(parents=True, exist_ok=True)
+    return config_dir / "sites.json"
 
 @lru_cache(maxsize=None)
 def load_sites_file() -> dict:

@@ -1,6 +1,6 @@
 # cadilib
 
-`cadilib` is a high-performance Python and Rust library designed for parsing, processing, and analyzing **Canadian Advanced Digital Ionosonde (CADI)** binary data (`.md1`, `.md2`, `.md3`, `.md4`) and **SAMEER** ionogram ASCII data (`.iono`).
+`cadilib` is a high-performance Python and Rust library designed for parsing, processing, and analyzing **Canadian Advanced Digital Ionosonde (CADI)** binary data (`.md1`, `.md2`, `.md3`, `.md4`) and **SAMEER** ionogram ASCII data (`.iono`) in India.
 
 Originally a part of [CADI Ionogram Tools](https://github.com/Rally0078/cadiionogram), the CADI parsing library is now separate from the GUI.
 
@@ -14,6 +14,12 @@ Originally a part of [CADI Ionogram Tools](https://github.com/Rally0078/cadiiono
 - **DataFrame Interoperability**: First-class conversion to both **Pandas** and **Polars** DataFrames with structured time partitioning.
 - **Ionogram Signal Processing & Filtering**: Built-in noise reduction, Doppler filtering, O/X mode separation, and k-vector estimation.
 - **Site Metadata & Timezone Support**: Configurable site parameters and local/universal time (UT/LT) coordinate calculations via `sites.json`.
+
+---
+
+## Todo
+
+- MacOS builds in PyPI
 
 ---
 
