@@ -2,6 +2,8 @@
 
 `cadilib` is a high-performance Python and Rust library designed for parsing, processing, and analyzing **Canadian Advanced Digital Ionosonde (CADI)** binary data (`.md1`, `.md2`, `.md3`, `.md4`) and **SAMEER** ionogram ASCII data (`.iono`).
 
+Originally a part of [CADI Ionogram Tools](https://github.com/Rally0078/cadiionogram), the CADI parsing library is now separate from the GUI.
+
 ---
 
 ## Features
@@ -17,7 +19,7 @@
 
 ## Installation
 
-### From PyPI (To Do)
+### From PyPI
 
 ```bash
 pip install cadilib
@@ -37,7 +39,7 @@ cd cadilib
 uv sync
 ```
 
-### Manually generate stubs (warning: overwrites the Rust module stub)
+### Manually generate stubs (warning: overwrites the handwritten Rust module stub)
 
 ```bash
 uv run stubgen --include-docstrings -p cadilib -o stubs
@@ -122,32 +124,3 @@ uv build --wheel
 ```bash
 uv run pytest
 ```
-
----
-
-## Project Structure
-
-```text
-cadilib/
-├── src/
-│   └── cadilib/
-│       ├── __init__.py
-│       ├── ionogramparser/       # MDx and SAMEER parsers (Python + Rust bindings)
-│       ├── ionogramfiltering/    # Signal processing, noise reduction
-│       ├── errorhandlers/        # Custom exception types
-│       └── utils/                # Pandas, Polars, and SiteInfo utilities
-├── rust/                         # High-performance Rust parser crate (PyO3)
-│   ├── Cargo.toml
-│   └── src/
-├── tests/
-│   ├── unit/
-│   └── integration/
-├── pyproject.toml
-└── hatch_build.py                # Hatchling build hook to compile Rust crate
-```
-
----
-
-## License
-
-Distributed under the [MIT License](LICENSE).

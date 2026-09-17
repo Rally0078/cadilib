@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software in your research or project, please cite the software package directly."
+type: software
+title: "cadilib"
+abstract: "A fast, cross-platform Python library backed by Rust for reading CADI raw data files."
+authors:
+  - family-names: "S"
+    given-names: "Jaideep Vimal Jothi"
+  - family-names: "S"
+    given-names: "Sripathi"
+
+version: "0.1.0"
+date-released: "2026-09-17"
+license: "BSD-3-Clause"
+repository-code: "https://github.com/Rally0078/cadilib"
+keywords:
+  - rust
+  - pyo3
+  - python
+  - cadi
+  - ionogram
+  - radar
