@@ -46,7 +46,7 @@ cadilib/
 ├── sites.json                     # Site metadata configuration (coordinates, timezones)
 ├── README.md                      # PyPI and user-facing documentation
 ├── AGENTS.md                      # Guide for AI agents and developers
-└── LICENSE                        # MIT License
+└── LICENSE                        # BSD-3-Clause License
 ```
 
 ---
