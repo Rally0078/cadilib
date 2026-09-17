@@ -1,5 +1,7 @@
 from typing import Tuple
 from cadilib.ionogramparser.cadioutput import CADIdata
+from cadilib.ionogramparser.mdxreader_rs import CADIdata as CADIdata_rs
+
 from cadilib.ionogramparser.sameeroutput import SameerData
 import numpy as np
 import pandas as pd
@@ -45,7 +47,7 @@ class PandasUtils:
     def _get_single_dataframe(data: CADIdata | SameerData, radar_type='cadi') -> pd.DataFrame | Tuple[pd.DataFrame, pd.DataFrame]:
         column_names = ['freq (Hz)', 'height (km)', 'dopplershift']
 
-        if radar_type.lower() == 'cadi' and isinstance(data, CADIdata):
+        if radar_type.lower() == 'cadi' and isinstance(data, (CADIdata, CADIdata_rs)):
             freqs = data.dopbins.frequency
             heights = data.dopbins.height
             dop_shifts = data.dopbins.dop_shifts
@@ -72,7 +74,7 @@ class PandasUtils:
         df_signals = pd.DataFrame.from_dict(dict(zip(column_names, table_data)))
         df_signals = df_signals.set_index(time_index)
 
-        if radar_type.lower() == 'cadi' and isinstance(data, CADIdata):
+        if radar_type.lower() == 'cadi' and isinstance(data, (CADIdata, CADIdata_rs)):
             column_names = ['freq (Hz)', 'gain_flag', 'noise_flag', 'noise_power10']
             table_data = [data.freqbins.frequency, data.freqbins.frebins_gain_flag, 
                         data.freqbins.frebins_noise_flag, data.freqbins.frebins_noise_power10]

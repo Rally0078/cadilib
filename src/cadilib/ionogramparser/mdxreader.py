@@ -1,16 +1,3 @@
-"""
-    MDx binary format ionogram parser.
-
-    Classes
-    ---------
-    MDreader
-        Static Methods
-        ---------
-        read_raw_data: Reads ionogram data from mdx file.
-
-        read_raw_data_dir: Reads ionogram data from a directory containing one or more mdx files.
-"""
-
 from pathlib import Path
 import struct
 from datetime import timezone, datetime, date, time
@@ -25,9 +12,9 @@ import numpy as np
 
 #MDn format reader, extended from DataReader baseclass
 class MDreader(DataReader):
-    def __init__(self):
-        pass
-    
+    """
+    MDx binary format ionogram parser. Contains the static method `read_raw_data` to read ionogram data from mdx file.
+    """    
     @staticmethod
     def _safe_reader(file: BufferedReader, bytes):
         data = file.read(bytes)

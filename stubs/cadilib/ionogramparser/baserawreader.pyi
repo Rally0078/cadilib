@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from cadilib.ionogramparser.baseoutput import BaseOutput as BaseOutput
 from pathlib import Path
-from cadilib.ionogramparser.baseoutput import BaseOutput
 
 class DataReader(ABC):
     """
@@ -15,6 +15,4 @@ class DataReader(ABC):
     read_raw_data : Reads ionogram data from a file.
     """
     @staticmethod
-    def read_raw_data(filename: Path) -> BaseOutput:
-        raise NotImplementedError
-
+    def read_raw_data(filename: Path) -> BaseOutput: ...
