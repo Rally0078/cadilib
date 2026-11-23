@@ -1,13 +1,11 @@
-from scipy.fft import fft2 as fft2, ifft2 as ifft2
-from scipy.signal import argrelextrema as argrelextrema, savgol_filter as savgol_filter
-from skimage import filters as filters
 from typing import Literal
+import polars as pl
 
 def calculate_pixbins(freqs, heights): ...
 def freq_filter(freqs, heights): ...
-def o_x_separation(freq_selection, height_selection, dop_selection, sensors_selection, mode: Literal['O', 'X'] = 'O', phchoice: Literal['14', '23'] = '14', site: str = 'TIR'):
+def o_x_separation(freq_selection, height_selection, dop_selection, sensors_selection, mode: Literal['O', 'X'] = 'O', phchoice: Literal['14', '23'] = '14', site: str = 'TIR', dt_series: pl.Series | None = None):
     """
-        Separate O and X mode based on phase14 of the CADI system. Note that old CADI TIR Data has the phase signs flipped for some reason.
+        Separate O and X mode based on phase14 of the CADI system. Note that the O and X-mode maybe flipped if the polarity information in SiteInfo is incorrect, or if the receiver antenna orietations are not aligned in the expected directions.
     """
 def bin_edges(x): ...
 def autoscale(freqs, heights, freq_list, height_list, n_dilations: int = 2, n_erosions: int = 2, interp_points: int = 125): ...

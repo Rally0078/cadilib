@@ -52,8 +52,8 @@ def compute_xpha_full(df: pd.DataFrame, freq_list, site='TIR'):
         site_sep_ew = site_info.site_separation[0]
         site_sep_ns = site_info.site_separation[1]
     else:
-        PH2_corr = 8.8906 * np.pi / 180
-        PH4_corr = -29.5086 * np.pi / 180
+        PH2_corr = 0
+        PH4_corr = 0
         site_sep_ew = 30.1
         site_sep_ns = 30.1
 
@@ -216,8 +216,6 @@ def compute_vel(df, freq_list, points_thres=5, site='TIR'):
         if(len(k_instance_onefreq) > 0):
             karray = k_instance_onefreq.to_numpy()
             v = np.linalg.pinv(karray/np.pi) @ y_df
-            v_horizontal = np.sqrt(np.sum(np.square(v[:2])))
-            azi = np.mod((180/np.pi * np.atan2(v[0], v[1])) + 22.33 , 360.0)    #22.33 is site azimuth information in degrees
             v_xarr = np.append(v_xarr, v[0])
             v_yarr = np.append(v_yarr, v[1])
             v_zarr = np.append(v_zarr, v[2])
