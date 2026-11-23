@@ -126,12 +126,12 @@ def o_x_separation(freq_selection, height_selection, dop_selection, sensors_sele
         if isinstance(freq_selection, np.ndarray):
             return freq_selection[phdiff > 0], height_selection[phdiff > 0], dop_selection[phdiff > 0], sensors_selection[phdiff > 0]
         elif isinstance(freq_selection, pl.Series):
-            return dt_series.filter(phdiff > 0), freq_selection.filter(phdiff > 0), height_selection.filter(phdiff > 0), dop_selection.filter(phdiff > 0), sensors_selection.filter(phdiff > 0)
+            return dt_series.filter(phdiff > 0), freq_selection.filter(phdiff > 0), height_selection.filter(phdiff > 0), dop_selection.filter(phdiff > 0), sensors_selection[phdiff > 0]
     else:
         if isinstance(freq_selection, np.ndarray):
             return freq_selection[phdiff < 0], height_selection[phdiff < 0], dop_selection[phdiff < 0], sensors_selection[phdiff < 0]
         elif isinstance(freq_selection, pl.Series):
-            return dt_series.filter(phdiff < 0), freq_selection.filter(phdiff < 0), height_selection.filter(phdiff < 0), dop_selection.filter(phdiff < 0), sensors_selection.filter(phdiff < 0)
+            return dt_series.filter(phdiff < 0), freq_selection.filter(phdiff < 0), height_selection.filter(phdiff < 0), dop_selection.filter(phdiff < 0), sensors_selection[phdiff < 0]
 
 def bin_edges(x):
     x = np.sort(np.unique(x))
