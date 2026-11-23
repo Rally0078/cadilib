@@ -27,8 +27,8 @@ def compute_xpha_full(df: pl.DataFrame, freq_list, site: str = 'TIR'):
         site_sep_ew = site_info.site_separation[0]
         site_sep_ns = site_info.site_separation[1]
     else:
-        PH2_corr = 8.8906 * np.pi / 180
-        PH4_corr = -29.5086 * np.pi / 180
+        PH2_corr = 0
+        PH4_corr = 0
         site_sep_ew = 30.1
         site_sep_ns = 30.1
     
@@ -245,7 +245,7 @@ def compute_xy(df: pl.DataFrame, freq_list, sort_by_freq=False, points_thres=5, 
         return pl.DataFrame({
             "datetime": [], "xpos":[], "ypos":[], "zpos":[], "zenith":[], "azimuth":[]
         }), output_freqs, output_heights, output_dops, output_signals, output_xpow
-    geo_df = karray.with_columns([
+    df_tmp = karray.with_columns([
         pl.when(pl.col("kz") < 0).then(-pl.col("kx")).otherwise(pl.col("kx")).alias("kx_corr"),
         pl.when(pl.col("kz") < 0).then(-pl.col("ky")).otherwise(pl.col("ky")).alias("ky_corr"),
         pl.when(pl.col("kz") < 0).then(-pl.col("kz")).otherwise(pl.col("kz")).alias("kz_corr"),
@@ -253,7 +253,7 @@ def compute_xy(df: pl.DataFrame, freq_list, sort_by_freq=False, points_thres=5, 
     ])
     
     # Apply coordinate and angle transformations element-wise
-    geo_df = geo_df.with_columns([
+    df_tmp = df_tmp.with_columns([
         ((pl.col("ky_corr").pow(2) + pl.col("kx_corr").pow(2)).sqrt()).alias("kh"),
         pl.arctan2(pl.col("kx_corr"), pl.col("kz_corr")).alias("zangleEW"),
         pl.arctan2(pl.col("ky_corr"), pl.col("kz_corr")).alias("zangleNS"),
@@ -276,6 +276,6 @@ def compute_xy(df: pl.DataFrame, freq_list, sort_by_freq=False, points_thres=5, 
         pl.when(pl.col("azimuth") < 0).then(pl.col("azimuth") + 360).otherwise(pl.col("azimuth"))
     ])
     
-    df_output = geo_df.select(["datetime", "xpos", "ypos", "zpos", "zenith", "azimuth"])
+    df_output = df_tmp.select(["datetime", "xpos", "ypos", "zpos", "zenith", "azimuth"])
     
     return df_output, output_freqs, output_heights, output_dops, output_signals, output_xpow

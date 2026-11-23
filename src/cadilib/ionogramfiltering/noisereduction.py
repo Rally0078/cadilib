@@ -6,6 +6,7 @@ from scipy.signal import savgol_filter,argrelextrema
 from skimage import measure, filters
 from scipy.interpolate import CubicSpline
 from typing import Literal
+import polars as pl
 
 def calculate_pixbins(freqs, heights):
     pixel_counts = []
@@ -79,10 +80,14 @@ def freq_filter(freqs, heights):
     _, new_medians, new_freqs_flayer = calculate_pixbins(freqs_filtered, heights_filtered)
     return noise_idx, new_freqs_flayer, new_medians
 
-def o_x_separation(freq_selection, height_selection, dop_selection, sensors_selection, mode: Literal['O','X']='O', phchoice: Literal['14','23']='14', site: str = 'TIR'):
+def o_x_separation(freq_selection, height_selection, dop_selection, sensors_selection, 
+                   mode: Literal['O','X']='O', phchoice: Literal['14','23']='14', site: str = 'TIR',
+                   dt_series: pl.Series | None = None):
     """
         Separate O and X mode based on phase14 of the CADI system. Note that old CADI TIR Data has the phase signs flipped for some reason.
     """
+    if isinstance(freq_selection, pl.Series) and dt_series is None:
+        raise ValueError("dt_series must be provided when freq_selection is a polars Series")
     if mode not in ['O', 'X']:
         raise ValueError("Only O and X modes are available")
     if phchoice not in ['14', '23']:
@@ -98,8 +103,8 @@ def o_x_separation(freq_selection, height_selection, dop_selection, sensors_sele
         site_sep_ns = site_info.site_separation[1]
         polarity = site_info.polarity
     else:
-        PH2_corr = np.pi + 45 * np.pi / 180
-        PH4_corr = np.pi - 20 * np.pi / 180
+        PH2_corr = 0
+        PH4_corr = 0
         site_sep_ew = 30.1
         site_sep_ns = 30.1
         polarity = [1,-1,1,-1]
@@ -116,11 +121,17 @@ def o_x_separation(freq_selection, height_selection, dop_selection, sensors_sele
     else:
         phdiff = sensor2_phase - sensor3_phase
         phdiff[phdiff < np.pi] += 2*np.pi
-        phdiff[phdiff > np.pi] -= 2*np.pi       
+        phdiff[phdiff > np.pi] -= 2*np.pi 
     if mode == 'O':
-        return freq_selection[phdiff > 0], height_selection[phdiff > 0], dop_selection[phdiff > 0], sensors_selection[phdiff > 0]
+        if isinstance(freq_selection, np.ndarray):
+            return freq_selection[phdiff > 0], height_selection[phdiff > 0], dop_selection[phdiff > 0], sensors_selection[phdiff > 0]
+        elif isinstance(freq_selection, pl.Series):
+            return dt_series.filter(phdiff > 0), freq_selection.filter(phdiff > 0), height_selection.filter(phdiff > 0), dop_selection.filter(phdiff > 0), sensors_selection.filter(phdiff > 0)
     else:
-        return freq_selection[phdiff < 0], height_selection[phdiff < 0], dop_selection[phdiff < 0], sensors_selection[phdiff < 0]
+        if isinstance(freq_selection, np.ndarray):
+            return freq_selection[phdiff < 0], height_selection[phdiff < 0], dop_selection[phdiff < 0], sensors_selection[phdiff < 0]
+        elif isinstance(freq_selection, pl.Series):
+            return dt_series.filter(phdiff < 0), freq_selection.filter(phdiff < 0), height_selection.filter(phdiff < 0), dop_selection.filter(phdiff < 0), sensors_selection.filter(phdiff < 0)
 
 def bin_edges(x):
     x = np.sort(np.unique(x))
