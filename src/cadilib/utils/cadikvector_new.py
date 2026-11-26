@@ -54,7 +54,7 @@ def compute_xpha_full(df: pl.DataFrame, freq_list, site: str = 'TIR'):
         s_real = a0_re_f * a1_re_f + a0_im_f * a1_im_f
         s_imag =  -a0_re_f * a1_im_f + a0_im_f * a1_re_f
 
-        xpow_exprs[name] = (s_real.pow(2) + s_imag.pow(2)).cast(pl.Float32)
+        xpow_exprs[name] = (s_real.pow(2) + s_imag.pow(2)).sqrt()
 
         angle_expr = pl.arctan2(s_imag, s_real) - corr
 
