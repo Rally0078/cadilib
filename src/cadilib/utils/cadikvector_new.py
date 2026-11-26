@@ -195,10 +195,13 @@ def compute_vel(df: pl.DataFrame, freq_list, points_thres=5, site: str = 'TIR'):
     )
     
     if k_out.is_empty():
-        return pl.DataFrame(schema={"freq (Hz)": pl.Float64, "vx": pl.Float64, "vy": pl.Float64, "vz": pl.Float64, "n_points": pl.Int64})
+        return pl.DataFrame(schema={"datetime": pl.Datetime, "freq (Hz)": pl.Float64, 
+                                    "vx": pl.Float64, "vy": pl.Float64, "vz": pl.Float64, 
+                                    "n_points": pl.Int64}), pl.Series(), pl.Series(), pl.Series(), pl.DataFrame(), pl.DataFrame()
 
     # Pack the pieces together to perform a grouped pseudo-inverse calculation
     calc_df = pl.DataFrame({
+        "datetime": k_out["datetime"],
         "freq": output_freqs,
         "kx": k_out["kx"],
         "ky": k_out["ky"],
@@ -208,6 +211,7 @@ def compute_vel(df: pl.DataFrame, freq_list, points_thres=5, site: str = 'TIR'):
 
     # Schema for the group-by aggregation operation
     output_schema = {
+        "datetime": k_out["datetime"].dtype,
         "freq (Hz)": pl.Float64,
         "vx": pl.Float64,
         "vy": pl.Float64,
@@ -218,6 +222,7 @@ def compute_vel(df: pl.DataFrame, freq_list, points_thres=5, site: str = 'TIR'):
     # Custom function applied over each frequency group
     def group_pinv(group: pl.DataFrame) -> pl.DataFrame:
         freq_val = group["freq"][0]
+        datetime_val = group["datetime"][0]
         y = group["dop"].to_numpy()
         karray = group.select(["kx", "ky", "kz"]).to_numpy()
         
@@ -225,6 +230,7 @@ def compute_vel(df: pl.DataFrame, freq_list, points_thres=5, site: str = 'TIR'):
         v = np.linalg.pinv(karray / np.pi) @ y
         
         return pl.DataFrame({
+            "datetime": [datetime_val],
             "freq (Hz)": [freq_val],
             "vx": [v[0]],
             "vy": [v[1]],
