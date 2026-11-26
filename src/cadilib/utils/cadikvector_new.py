@@ -190,7 +190,7 @@ def compute_kvector(df: pl.DataFrame, freq_list, sort_by_freq=False, points_thre
 
 def compute_vel(df: pl.DataFrame, freq_list, points_thres=5, site: str = 'TIR'):
     # Call the Polars implementation of compute_kvector
-    k_out, output_freqs, _, output_dops, _, _ = compute_kvector(
+    k_out, output_freqs, output_heights, output_dops, output_signals, output_xpow = compute_kvector(
         df, freq_list, sort_by_freq=True, points_thres=points_thres, site=site
     )
     
@@ -233,7 +233,7 @@ def compute_vel(df: pl.DataFrame, freq_list, points_thres=5, site: str = 'TIR'):
         }, schema=output_schema)
 
     df_output = calc_df.group_by("freq").map_groups(group_pinv).sort("freq (Hz)")
-    return df_output
+    return df_output, output_freqs, output_heights, output_dops, output_signals, output_xpow
 
 
 def compute_xy(df: pl.DataFrame, freq_list, sort_by_freq=False, points_thres=5, site: str = 'TIR'):

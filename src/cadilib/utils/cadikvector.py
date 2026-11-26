@@ -205,7 +205,7 @@ def compute_kvector(df, freq_list, sort_by_freq=False, points_thres=5, site='TIR
     return k_out_with_ts, output_freqs, output_heights, output_dops, output_signals, output_xpow
 
 def compute_vel(df, freq_list, points_thres=5, site='TIR'):
-    k_out_with_ts, output_freqs, _, output_dops, _, _ = compute_kvector(df, freq_list, sort_by_freq=True, points_thres=points_thres, site=site)
+    k_out_with_ts,  output_freqs, output_heights, output_dops, output_signals, output_xpow = compute_kvector(df, freq_list, sort_by_freq=True, points_thres=points_thres, site=site)
     v_xarr = np.array([])
     v_yarr = np.array([])
     v_zarr = np.array([])
@@ -227,7 +227,7 @@ def compute_vel(df, freq_list, points_thres=5, site='TIR'):
                 "vz": v[2],
                 "n_points": len(y_df)
             }, index=np.unique(df.index))])
-    return df_output
+    return df_output, output_freqs, output_heights, output_dops, output_signals, output_xpow
 
 def compute_xy(df, freq_list, sort_by_freq=False, points_thres=5, site='TIR'):
     karray, output_freqs, output_heights, output_dops, output_signals, output_xpow = compute_kvector(df, freq_list, sort_by_freq=sort_by_freq, points_thres=points_thres, site=site)
