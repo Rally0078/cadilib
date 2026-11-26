@@ -84,14 +84,15 @@ def o_x_separation(freq_selection, height_selection, dop_selection, sensors_sele
                    mode: Literal['O','X']='O', phchoice: Literal['14','23']='14', site: str = 'TIR',
                    dt_series: pl.Series | None = None):
     """
-        Separate O and X mode based on phase14 of the CADI system. Note that old CADI TIR Data has the phase signs flipped for some reason.
+        Separate O and X mode based on phase difference of orthogonal receivers of the CADI system.
+        Note that the sign convention(polarity) must be correct, as well as the phase calibration of the system.
     """
     if isinstance(freq_selection, pl.Series) and dt_series is None:
         raise ValueError("dt_series must be provided when freq_selection is a polars Series")
     if mode not in ['O', 'X']:
         raise ValueError("Only O and X modes are available")
-    if phchoice not in ['14', '23']:
-        raise ValueError("Only phase difference 1-4 and 2-3 are available")
+    if phchoice not in ['14', '23', '13', '24']:
+        raise ValueError("Only phase difference 1-3, 1-4, 2-3, and 2-4 are available")
         #Site Info, loaded from siteinfo.py
     from cadilib.utils.siteinfo import SiteInfo
     site_info = SiteInfo.get_from_file(site)
@@ -99,29 +100,27 @@ def o_x_separation(freq_selection, height_selection, dop_selection, sensors_sele
     if site_info is not None:
         PH2_corr = site_info.ph_corr[0] * np.pi / 180
         PH4_corr = site_info.ph_corr[1] * np.pi / 180
-        site_sep_ew = site_info.site_separation[0]
-        site_sep_ns = site_info.site_separation[1]
         polarity = site_info.polarity
     else:
         PH2_corr = 0
         PH4_corr = 0
-        site_sep_ew = 30.1
-        site_sep_ns = 30.1
         polarity = [1,-1,1,-1]
     sensor1_phase = np.angle(sensors_selection[:, 0] * polarity[0] + 1j * sensors_selection[:, 1] * polarity[0])
     sensor2_phase = np.angle(sensors_selection[:, 2] * polarity[1] + 1j * sensors_selection[:, 3] * polarity[1])
     sensor3_phase = np.angle(sensors_selection[:, 4] * polarity[2] + 1j * sensors_selection[:, 5] * polarity[2])
     sensor4_phase = np.angle(sensors_selection[:, 6] * polarity[3] + 1j * sensors_selection[:, 7] * polarity[3])
-    sensor1_phase = sensor1_phase + PH2_corr
-    sensor3_phase = sensor3_phase + PH4_corr
+    sensor2_phase = sensor2_phase + PH2_corr
+    sensor4_phase = sensor4_phase + PH4_corr
     if phchoice == '14':
         phdiff = sensor1_phase - sensor4_phase
-        phdiff[phdiff < np.pi] += 2*np.pi
-        phdiff[phdiff > np.pi] -= 2*np.pi
-    else:
+    elif phchoice == '13':
+        phdiff = sensor1_phase - sensor3_phase
+    elif phchoice == '23':
         phdiff = sensor2_phase - sensor3_phase
-        phdiff[phdiff < np.pi] += 2*np.pi
-        phdiff[phdiff > np.pi] -= 2*np.pi 
+    else:
+        phdiff = sensor2_phase - sensor4_phase
+    phdiff[phdiff < np.pi] += 2*np.pi
+    phdiff[phdiff > np.pi] -= 2*np.pi
     if mode == 'O':
         if isinstance(freq_selection, np.ndarray):
             return freq_selection[phdiff > 0], height_selection[phdiff > 0], dop_selection[phdiff > 0], sensors_selection[phdiff > 0]
