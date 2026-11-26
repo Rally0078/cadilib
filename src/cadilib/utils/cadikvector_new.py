@@ -26,11 +26,13 @@ def compute_xpha_full(df: pl.DataFrame, freq_list, site: str = 'TIR'):
         PH4_corr = site_info.ph_corr[1] * np.pi / 180
         site_sep_ew = site_info.site_separation[0]
         site_sep_ns = site_info.site_separation[1]
+        polarity = site_info.polarity
     else:
         PH2_corr = 0
         PH4_corr = 0
         site_sep_ew = 30.1
         site_sep_ns = 30.1
+        polarity = [1, -1, 1, -1]
     
     # Pairwise definitions: (ant0_re, ant0_im, ant1_re, ant1_im)
     pairs = {
@@ -41,19 +43,20 @@ def compute_xpha_full(df: pl.DataFrame, freq_list, site: str = 'TIR'):
     xpow_exprs = {}
     xpha_exprs = {}
     
-    for name, (a0_re, a0_im, a1_re, a1_im, corr) in pairs.items():
+    for idx, (name, (a0_re, a0_im, a1_re, a1_im, corr)) in enumerate(pairs.items()):
     # Cast to float64 first to match np.float64 precision behavior
-        a0_re_f = pl.col(a0_re).cast(pl.Float64)
-        a0_im_f = pl.col(a0_im).cast(pl.Float64)
-        a1_re_f = pl.col(a1_re).cast(pl.Float64)
-        a1_im_f = pl.col(a1_im).cast(pl.Float64)
+        a0_re_f = polarity[2*idx] * pl.col(a0_re).cast(pl.Float64)
+        a0_im_f = polarity[2*idx] * pl.col(a0_im).cast(pl.Float64)
+        a1_re_f = polarity[2*idx+1] * pl.col(a1_re).cast(pl.Float64)
+        a1_im_f = polarity[2*idx+1] * pl.col(a1_im).cast(pl.Float64)
 
-        s_real = -(a0_re_f * a1_re_f + a0_im_f * a1_im_f)
-        s_imag = a0_re_f * a1_im_f - a0_im_f * a1_re_f
+        # Multiply by complex conjugate of 2nd rcv in pair
+        s_real = a0_re_f * a1_re_f + a0_im_f * a1_im_f
+        s_imag =  -a0_re_f * a1_im_f + a0_im_f * a1_re_f
 
         xpow_exprs[name] = (s_real.pow(2) + s_imag.pow(2)).cast(pl.Float32)
 
-        angle_expr = pl.arctan2(s_imag, s_real) + corr
+        angle_expr = pl.arctan2(s_imag, s_real) - corr
 
         angle_expr = (
             pl.when(angle_expr > np.pi)

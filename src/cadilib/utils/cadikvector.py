@@ -51,25 +51,26 @@ def compute_xpha_full(df: pd.DataFrame, freq_list, site='TIR'):
         PH4_corr = site_info.ph_corr[1] * np.pi / 180
         site_sep_ew = site_info.site_separation[0]
         site_sep_ns = site_info.site_separation[1]
+        polarity = site_info.polarity
     else:
         PH2_corr = 0
         PH4_corr = 0
         site_sep_ew = 30.1
         site_sep_ns = 30.1
+        polarity = [1, -1, 1, -1]
 
     ph_corrections = [PH2_corr, PH4_corr]
     pairwise_antenna13 = [('sensor1 real', 'sensor1 imag'), ('sensor3 real', 'sensor3 imag')]
     pairwise_antenna24 = [('sensor2 real', 'sensor2 imag'), ('sensor4 real', 'sensor4 imag')]
     cross_names = ['x1', 'x2']
-    for pair1, pair2, cross_name, ph_corr in zip(pairwise_antenna13, pairwise_antenna24, cross_names, ph_corrections):
+    for idx, (pair1, pair2, cross_name, ph_corr) in enumerate(zip(pairwise_antenna13, pairwise_antenna24, cross_names, ph_corrections)):
         ant0_re = new_signal_selection[pair1[0]].to_numpy().astype(np.int32)
         ant0_im = new_signal_selection[pair1[1]].to_numpy().astype(np.int32)
         ant1_re = new_signal_selection[pair2[0]].to_numpy().astype(np.int32)
         ant1_im = new_signal_selection[pair2[1]].to_numpy().astype(np.int32)
-        s = (ant0_re + 1j * ant0_im) * np.conjugate((ant1_re + 1j * ant1_im))
-        s = -s  #Site dependent, use polarity to determine according to the IDL code
+        s = polarity[2*idx] * (ant0_re + 1j * ant0_im) * np.conjugate(polarity[2*idx+1] * (ant1_re + 1j * ant1_im))
         xpow[cross_name] = np.abs(s)**2
-        xpha[cross_name] = np.angle(s) + ph_corr
+        xpha[cross_name] = np.angle(s) - ph_corr
         xpha.loc[xpha[cross_name] > np.pi, cross_name] -= 2*np.pi
         xpha.loc[xpha[cross_name] < -np.pi, cross_name] += 2*np.pi
 
